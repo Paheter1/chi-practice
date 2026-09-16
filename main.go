@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -17,13 +18,23 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func myMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("MyMiddleware")
+		w.Write([]byte("mymiddle"))
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	r := chi.NewRouter()
+	r.Use(myMiddleware)
 
 	r.Get("/", http.NotFoundHandler().ServeHTTP)
 	r.Get("/hello", helloHandler)
 	r.Get(`/users/{id}`, userHandler)
 
 	http.ListenAndServe(":8080", r)
+	fmt.Println("Start Server")
 
 }
