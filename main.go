@@ -20,9 +20,9 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 
 func myMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("MyMiddleware")
-		w.Write([]byte("mymiddle"))
+		fmt.Println("До", r.Method, r.URL.Path)
 		next.ServeHTTP(w, r)
+		fmt.Println("после")
 	})
 }
 
@@ -35,6 +35,5 @@ func main() {
 	r.Get(`/users/{id}`, userHandler)
 
 	http.ListenAndServe(":8080", r)
-	fmt.Println("Start Server")
 
 }
